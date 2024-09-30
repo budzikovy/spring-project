@@ -40,4 +40,9 @@ public class StudentController {
         return studentService.editStudent(id, updatedStudent);
     }
 
+    @PostMapping("/{studentId}/schoolClasses/{schoolId}")
+    public StudentDto assignStudentToClass(@PathVariable Long studentId, @PathVariable Long schoolId){
+        return studentService.assignStudentToClass(studentId, schoolId);
+    }
+
 }

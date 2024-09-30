@@ -6,32 +6,32 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Student {
+public class SchoolClass {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String firstName;
-    private String lastName;
+    private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "class_id")
-    private SchoolClass schoolClass;
+    @OneToMany(mappedBy = "schoolClass", cascade = CascadeType.ALL)
+    private List<Student> students;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
 
-        if (!(o instanceof Student))
+        if (!(o instanceof SchoolClass))
             return false;
 
-        Student other = (Student) o;
+        SchoolClass other = (SchoolClass) o;
 
         return id != null &&
                 id.equals(other.getId());
@@ -44,11 +44,11 @@ public class Student {
 
     @Override
     public String toString() {
-        return "Student{" +
+        return "SchoolClass{" +
                 "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", schoolClass=" + schoolClass.getId() +
+                ", name='" + name + '\'' +
+                ", students=" + getStudents().stream()
+                .map(Student::getId).toList() +
                 '}';
     }
 }
