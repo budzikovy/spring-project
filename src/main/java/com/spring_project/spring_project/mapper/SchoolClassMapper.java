@@ -20,11 +20,8 @@ public abstract class SchoolClassMapper {
 
     @Named("mapStudentsToIds")
     List<Long> mapStudentsToIds(List<Student> students) {
-        if (students == null) {
-            return null;
-        }
-        return students.stream()
+        return students != null ? students.stream()
                 .map(Student::getId)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()) : null;
     }
 }
