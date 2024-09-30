@@ -49,9 +49,6 @@ public class SchoolClassService {
         SchoolClass editedSchoolClass = schoolClassRepository.save(editSchoolClass);
 
         return schoolClassMapper.toDto(editedSchoolClass);
-
     }
-
-
 
 }

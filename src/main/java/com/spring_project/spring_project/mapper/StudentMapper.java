@@ -8,7 +8,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public abstract class StudentMapper {
 
-    @Mapping(target = "schoolClassId", source = "schoolClass.id") // Mapa id z obiektu SchoolClass
+    @Mapping(target = "schoolClassId", source = "schoolClass.id")
     public abstract StudentDto toDto(Student student);
 
     public abstract Student toStudent(StudentDto studentDto);

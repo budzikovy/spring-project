@@ -1,10 +1,13 @@
 package com.spring_project.spring_project.service;
 
-import com.spring_project.spring_project.exception.TeacherNotFoundException;
+import com.spring_project.spring_project.exception.*;
 import com.spring_project.spring_project.mapper.TeacherMapper;
 import com.spring_project.spring_project.model.dto.TeacherDto;
+import com.spring_project.spring_project.model.entity.Subject;
 import com.spring_project.spring_project.model.entity.Teacher;
+import com.spring_project.spring_project.repository.SubjectRepository;
 import com.spring_project.spring_project.repository.TeacherRepository;
+import com.spring_project.spring_project.validation.SubjectValidation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +18,7 @@ import java.util.List;
 public class TeacherService {
 
     private final TeacherRepository teacherRepository;
+    private final SubjectRepository subjectRepository;
     private final TeacherMapper teacherMapper;
 
     public List<TeacherDto> getTeachers(){
@@ -50,6 +54,20 @@ public class TeacherService {
 
         return teacherMapper.toDto(editedTeacher);
 
+    }
+
+    public TeacherDto assignTeacherToSubject(Long teacherId, Long subjectId) throws CannotAssignSameTeacherToSubject {
+        Teacher teacher = teacherRepository.findById(teacherId)
+                .orElseThrow(() -> new TeacherNotFoundException(teacherId));
+
+        Subject subject = subjectRepository.findById(subjectId)
+                .orElseThrow(() -> new SubjectNotFoundException(subjectId));
+
+        SubjectValidation.validateTeacherToSubjectAssignment(teacher, subject);
+
+        teacher.getSubjects().add(subject);
+        Teacher updatedTeacher = teacherRepository.save(teacher);
+        return teacherMapper.toDto(updatedTeacher);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.spring_project.spring_project.controller;
 
+import com.spring_project.spring_project.exception.CannotAssignSameTeacherToSubject;
 import com.spring_project.spring_project.model.dto.TeacherDto;
 import com.spring_project.spring_project.model.entity.Teacher;
 import com.spring_project.spring_project.service.TeacherService;
@@ -38,6 +39,11 @@ public class TeacherController {
     @PutMapping("/{id}")
     public TeacherDto editTeacher(@PathVariable("id") Long id, @RequestBody Teacher updatedTeacher) {
         return teacherService.editTeacher(id, updatedTeacher);
+    }
+
+    @PostMapping("/{teacherId}/subjects/{subjectId}")
+    public TeacherDto assignTeacherToSubject(@PathVariable Long teacherId, @PathVariable Long subjectId) throws CannotAssignSameTeacherToSubject {
+        return teacherService.assignTeacherToSubject(teacherId, subjectId);
     }
 
 }
