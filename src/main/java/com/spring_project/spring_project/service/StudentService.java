@@ -1,9 +1,12 @@
 package com.spring_project.spring_project.service;
 
+import com.spring_project.spring_project.exception.SchoolClassNotFoundException;
 import com.spring_project.spring_project.exception.StudentNotFoundException;
 import com.spring_project.spring_project.mapper.StudentMapper;
 import com.spring_project.spring_project.model.dto.StudentDto;
+import com.spring_project.spring_project.model.entity.SchoolClass;
 import com.spring_project.spring_project.model.entity.Student;
+import com.spring_project.spring_project.repository.SchoolClassRepository;
 import com.spring_project.spring_project.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,6 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StudentService {
 
+    private final SchoolClassRepository schoolClassRepository;
     private final StudentRepository studentRepository;
     private final StudentMapper studentMapper;
 
@@ -50,4 +54,17 @@ public class StudentService {
 
         return studentMapper.toDto(editedStudent);
     }
+
+    public StudentDto assignStudentToClass(Long studentId, Long schoolId) {
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new StudentNotFoundException(studentId));
+
+        SchoolClass schoolClass = schoolClassRepository.findById(schoolId)
+                .orElseThrow(() -> new SchoolClassNotFoundException(schoolId));
+
+        student.setSchoolClass(schoolClass);
+        Student updatedStudent = studentRepository.save(student);
+        return studentMapper.toDto(updatedStudent);
+    }
+
 }
