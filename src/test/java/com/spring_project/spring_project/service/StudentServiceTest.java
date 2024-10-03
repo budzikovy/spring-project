@@ -1,5 +1,6 @@
 package com.spring_project.spring_project.service;
 
+import com.spring_project.spring_project.exception.SchoolClassNotFoundException;
 import com.spring_project.spring_project.exception.StudentNotFoundException;
 import com.spring_project.spring_project.mapper.StudentMapper;
 import com.spring_project.spring_project.model.dto.StudentDto;
@@ -92,6 +93,15 @@ public class StudentServiceTest {
     }
 
     @Test
+    void getStudent_StudentNotFound_ExceptionThrown(){
+        when(studentRepository.findById(1L)).thenReturn(Optional.empty());
+
+        StudentNotFoundException exception = assertThrows(StudentNotFoundException.class,
+                () -> studentService.getStudent(1L));
+        assertEquals("Student with id 1 not found.", exception.getMessage());
+    }
+
+    @Test
     void deleteStudent_DataCorrect_StudentDtoReturned(){
         //GIVEN
         Student student = new Student();
@@ -115,7 +125,8 @@ public class StudentServiceTest {
         when(studentRepository.findById(1L)).thenReturn(Optional.empty());
 
         //WHEN THEN
-        assertThrows(StudentNotFoundException.class, () -> studentService.deleteStudent(1L));
+        StudentNotFoundException exception = assertThrows(StudentNotFoundException.class, () -> studentService.deleteStudent(1L));
+        assertEquals("Student with id 1 not found.", exception.getMessage());
     }
 
     @Test
@@ -150,7 +161,8 @@ public class StudentServiceTest {
         when(studentRepository.findById(1L)).thenReturn(Optional.empty());
 
         //WHEN THEN
-        assertThrows(StudentNotFoundException.class, () -> studentService.editStudent(1L, updatedStudent));
+        StudentNotFoundException exception = assertThrows(StudentNotFoundException.class, () -> studentService.editStudent(1L, updatedStudent));
+        assertEquals("Student with id 1 not found.", exception.getMessage());
     }
 
     @Test
@@ -175,4 +187,32 @@ public class StudentServiceTest {
         assertEquals(schoolClass, student.getSchoolClass());
     }
 
+    @Test
+    void assignStudentToClass_SchoolClassNotFound_ExceptionThrown(){
+
+        Student student = new Student();
+        student.setFirstName("Jakub");
+        student.setLastName("Kowalski");
+
+        when(studentRepository.findById(1L)).thenReturn(Optional.of(student));
+        when(schoolClassRepository.findById(1L)).thenReturn(Optional.empty());
+
+        SchoolClassNotFoundException exception = assertThrows(SchoolClassNotFoundException.class, () -> studentService.assignStudentToClass(1L, 1L));
+        assertEquals("School class with id 1 not found.", exception.getMessage());
+        assertEquals("Jakub", student.getFirstName());
+        assertEquals("Kowalski", student.getLastName());
+    }
+
+    @Test
+    void assignStudentToClass_StudentNotFound_ExceptionThrown(){
+
+        SchoolClass schoolClass = new SchoolClass();
+        schoolClass.setName("1A");
+
+        when(studentRepository.findById(1L)).thenReturn(Optional.empty());
+
+        StudentNotFoundException exception = assertThrows(StudentNotFoundException.class, () -> studentService.assignStudentToClass(1L, 1L));
+        assertEquals("Student with id 1 not found.", exception.getMessage());
+        assertEquals("1A", schoolClass.getName());
+    }
 }
